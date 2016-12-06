@@ -19,3 +19,4 @@ class BoardView:
                 else:
                     sys.stdout.write("-\t")
             sys.stdout.write("\n")
+        sys.stdout.write("\n")

@@ -1,5 +1,4 @@
 from copy import deepcopy
-from BoardView import BoardView
 from Board import Board
 
 class Player:
@@ -331,39 +330,3 @@ class Player:
 
             if(dice.column == destination.column):
                 break
-
-
-#Main at the moment
-board = Board()
-bv = BoardView()
-player = Player()
-bv.draw_board(board)
-
-"""player.roll_up(board.get_square_resident(0, 0), board)
-bv.draw_board(board)
-player.roll_right(board.get_square_resident(1, 0), board)
-bv.draw_board(board)
-player.roll_right(board.get_square_resident(1, 1), board)
-bv.draw_board(board)
-player.roll_left(board.get_square_resident(1, 2), board)
-bv.draw_board(board)
-player.roll_left(board.get_square_resident(1, 1), board)
-bv.draw_board(board)
-player.roll_down(board.get_square_resident(1, 0), board)
-bv.draw_board(board)"""
-player.make_a_move(0, 0, 1, 0, board, False)
-bv.draw_board(board)
-player.make_a_move(0, 0, 1, 4, board, False)
-bv.draw_board(board)
-player.make_a_move(0, 8, 1, 4, board, False)
-bv.draw_board(board)
-player.make_a_move(7, 5, 1, 5, board, False)
-bv.draw_board(board)
-player.make_a_move(1, 5, 2, 5, board, False)
-bv.draw_board(board)
-player.make_a_move(0, 6, 1, 5, board, False)
-bv.draw_board(board)
-player.make_a_move(0, 5, 6, 5, board, False)
-bv.draw_board(board)
-player.make_a_move(0, 1, 0, 0, board, False)
-bv.draw_board(board)
