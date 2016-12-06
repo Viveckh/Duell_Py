@@ -1,6 +1,5 @@
 from Player import Player
 from Board import Board
-from BoardView import BoardView
 
 class Human(Player):
     #Validates user's Input, Validates user's move and performs the move as instructed by human player
@@ -45,27 +44,3 @@ class Human(Player):
         if (endCol <= 0 or endCol > 9):
             return True
         return False
-
-
-#Main at the moment
-boa = Board()
-bv = BoardView()
-player = Human()
-bv.draw_board(boa)
-
-player.play(1, 1, 2, 1, boa)
-bv.draw_board(boa)
-player.play(1, 1, 2, 5, boa)
-bv.draw_board(boa)
-player.play(1, 9, 2, 5, boa)
-bv.draw_board(boa)
-player.play(8, 6, 2, 6, boa)
-bv.draw_board(boa)
-player.play(2, 6, 3, 6, boa)
-bv.draw_board(boa)
-player.play(1, 7, 2, 6, boa)
-bv.draw_board(boa)
-player.play(1, 6, 7, 6, boa)
-bv.draw_board(boa)
-player.play(1, 2, 1, 1, boa)
-bv.draw_board(boa)

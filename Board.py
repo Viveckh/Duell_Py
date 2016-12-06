@@ -49,6 +49,12 @@ class Board:
     def get_square_at_location(self, row, col):
         return self.gameBoard[row][col]
 
+    def get_human_king(self):
+        return self.humans[4]
+
+    def get_bot_king(self):
+        return self.bots[4]
+    
     #Sets square resident, dice can be null if the square has to be set vacant
     def set_square_resident_dice(self, row, col, dice):
         self.gameBoard[row][col].resident = dice
