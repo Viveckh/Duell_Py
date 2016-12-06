@@ -141,7 +141,7 @@ class Player:
             dice.column = dice.column - self.counterColumnsTraversed
 
             #Path 2 - First column traversal, then row
-            if (self.traversed_columns_without_blockade(dice, destination, board) and self.traversed_columns_without_blockade(dice, destination, board)):
+            if (self.traversed_columns_without_blockade(dice, destination, board) and self.traversed_rows_without_blockade(dice, destination, board)):
                 #If the previous path was valid too, then there are surely two paths
                 if (self.pathChoice == 1):
                     self.multiplePathPossible = True
@@ -323,7 +323,7 @@ class Player:
         while True:
             if (dice.column < destination.column):
                 self.roll_right(dice, board)
-                self.counterColumnsTraversed -= 1
+                self.counterColumnsTraversed += 1
             else:
                 self.roll_left(dice, board)
                 self.counterColumnsTraversed -= 1

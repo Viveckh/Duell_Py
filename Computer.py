@@ -47,6 +47,7 @@ class Computer(Player):
             if (not self.ownDiceList[index].captured):
                 #Try to capture the king die
                 if (Player.make_a_move(self, self.ownDiceList[index].row, self.ownDiceList[index].column, self.opponentKingSquare.row, self.opponentKingSquare.column, board, self.helpModeOn, 0)):
+                    print "king captured"
                     return True
                 #Try to capture the key square by the king die
                 if (self.ownDiceList[index].king):
@@ -289,7 +290,7 @@ class Computer(Player):
 
         #Go through the entire game board, find a location where the squareAtRisk will be safe and move it there
         for row in range(0, 8):
-            for row in range(0, 9):
+            for col in range(0, 9):
                 if (Player.is_valid_destination(self, squareAtRisk.resident, board.get_square_at_location(row, col))):
                     if (Player.is_path_valid(self, squareAtRisk.resident, board.get_square_at_location(row, col), board)):
                         if (not self.is_in_danger(board.get_square_at_location(row, col), board)):
@@ -322,6 +323,22 @@ bv.draw_board(boa)
 comp.play(boa, False)
 bv.draw_board(boa)
 player.play(1, 1, 2, 5, boa)
+bv.draw_board(boa)
+comp.play(boa, False)
+bv.draw_board(boa)
+player.play(2, 5, 5, 5, boa)
+bv.draw_board(boa)
+comp.play(boa, False)
+bv.draw_board(boa)
+comp.play(boa, False)
+bv.draw_board(boa)
+comp.play(boa, False)
+bv.draw_board(boa)
+comp.play(boa, False)
+bv.draw_board(boa)
+comp.play(boa, False)
+bv.draw_board(boa)
+comp.play(boa, False)
 bv.draw_board(boa)
 comp.play(boa, False)
 bv.draw_board(boa)
