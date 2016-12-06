@@ -43,7 +43,11 @@ class Board:
 
     #Gets square resident if rows and column coordinates within the board is given
     def get_square_resident(self, row, col):
-            return self.gameBoard[row][col].resident
+        return self.gameBoard[row][col].resident
+
+    #Gets square at a given location within the Board
+    def get_square_at_location(self, row, col):
+        return self.gameBoard[row][col]
 
     #Sets square resident, dice can be null if the square has to be set vacant
     def set_square_resident_dice(self, row, col, dice):
