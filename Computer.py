@@ -8,6 +8,12 @@ class Computer(Player):
     def __init__(self):
         self.TEAMSIZE = 9
         self.helpModeOn = False
+        self.ownDiceList = None
+        self.opponentDiceList = None
+        self.ownKingSquare = None
+        self.ownKeySquare = None
+        self.opponentKingSquare = None
+        self.opponentKeySquare = None
 
     #Prioritizes, calculates and makes proper move for Computer on its turn
     def play(self, board, helpModeOn):
@@ -20,55 +26,55 @@ class Computer(Player):
         #If help mode on, the algorithm will work favorably for human and against the Computer
         if (self.helpModeOn):
             #Setting Human as the owner and bot as the opponent
-            ownDiceList = deepcopy(calculationBoard.humans)
-            opponentDiceList = deepcopy(calculationBoard.bots)
-            ownKingSquare = deepcopy(calculationBoard.get_square_at_location(calculationBoard.get_human_king().row, calculationBoard.get_human_king().column))
-            ownKeySquare = deepcopy(calculationBoard.get_square_at_location(0, 4))
-            opponentKingSquare = deepcopy(calculationBoard.get_square_at_location(calculationBoard.get_bot_king().row, calculationBoard.get_bot_king().column))
-            opponentKeySquare = deepcopy(calculationBoard.get_square_at_location(7, 4))
+            self.ownDiceList = deepcopy(calculationBoard.humans)
+            self.opponentDiceList = deepcopy(calculationBoard.bots)
+            self.ownKingSquare = deepcopy(calculationBoard.get_square_at_location(calculationBoard.get_human_king().row, calculationBoard.get_human_king().column))
+            self.ownKeySquare = deepcopy(calculationBoard.get_square_at_location(0, 4))
+            self.opponentKingSquare = deepcopy(calculationBoard.get_square_at_location(calculationBoard.get_bot_king().row, calculationBoard.get_bot_king().column))
+            self.opponentKeySquare = deepcopy(calculationBoard.get_square_at_location(7, 4))
         else:
             #Setting Bot as the owner and human as the opponent
-            ownDiceList = deepcopy(calculationBoard.bots)
-            opponentDiceList = deepcopy(calculationBoard.humans)
-            ownKingSquare = deepcopy(calculationBoard.get_square_at_location(calculationBoard.get_bot_king().row, calculationBoard.get_bot_king().column))
-            ownKeySquare = deepcopy(calculationBoard.get_square_at_location(7, 4))
-            opponentKingSquare = deepcopy(calculationBoard.get_square_at_location(calculationBoard.get_human_king().row, calculationBoard.get_human_king().column))
-            opponentKeySquare = deepcopy(calculationBoard.get_square_at_location(0, 4))
+            self.ownDiceList = deepcopy(calculationBoard.bots)
+            self.opponentDiceList = deepcopy(calculationBoard.humans)
+            self.ownKingSquare = deepcopy(calculationBoard.get_square_at_location(calculationBoard.get_bot_king().row, calculationBoard.get_bot_king().column))
+            self.ownKeySquare = deepcopy(calculationBoard.get_square_at_location(7, 4))
+            self.opponentKingSquare = deepcopy(calculationBoard.get_square_at_location(calculationBoard.get_human_king().row, calculationBoard.get_human_king().column))
+            self.opponentKeySquare = deepcopy(calculationBoard.get_square_at_location(0, 4))
 
         #PRINT NOTIFICATIONS
         #STEP 1: Check if the opponent's king or key square can be captured. If yes, go for it
         for index in range(0, self.TEAMSIZE):
-            if (not ownDiceList[index].captured):
+            if (not self.ownDiceList[index].captured):
                 #Try to capture the king die
-                if (Player.make_a_move(self, ownDiceList[index].row, ownDiceList[index].column, opponentKingSquare.row, opponentKingSquare.column, board, self.helpModeOn, 0)):
+                if (Player.make_a_move(self, self.ownDiceList[index].row, self.ownDiceList[index].column, self.opponentKingSquare.row, self.opponentKingSquare.column, board, self.helpModeOn, 0)):
                     return True
                 #Try to capture the key square by the king die
-                if (ownDiceList[index].king):
-                    if (Player.make_a_move(self, ownDiceList[index].row, ownDiceList[index].column, opponentKeySquare.row, opponentKeySquare.column, board, self.helpModeOn, 0)):
+                if (self.ownDiceList[index].king):
+                    if (Player.make_a_move(self, self.ownDiceList[index].row, self.ownDiceList[index].column, self.opponentKeySquare.row, self.opponentKeySquare.column, board, self.helpModeOn, 0)):
                         return True
 
         #PRINT NOTIFICATIONS
         #STEP 2: Check if own king or keysquare is under potential attack. If yes, Save em
         for index in range(0, self.TEAMSIZE):
-            if (not opponentDiceList[index].captured):
+            if (not self.opponentDiceList[index].captured):
                 #If both kingSquare and keySquare are under threat, then blocking is the best way to go about iter
 
                 #Check if kingSquare is under imminent threat
-                if (Player.is_valid_destination(self, opponentDiceList[index], ownKingSquare)):
-                    if (Player.is_path_valid(self, opponentDiceList[index], ownKingSquare, calculationBoard)):
+                if (Player.is_valid_destination(self, self.opponentDiceList[index], self.ownKingSquare)):
+                    if (Player.is_path_valid(self, self.opponentDiceList[index], self.ownKingSquare, calculationBoard)):
                         #King is under imminent threat
                         #PRINT NOTIFICATIONS
 
                         #First, try capturing the hostile opponent
-                        if (self.try_capturing_the_hostile_opponent(opponentDiceList[index], board)):
+                        if (self.try_capturing_the_hostile_opponent(self.opponentDiceList[index], board)):
                             #PRINT NOTIFICATIONS
                             return True
                         else:
                             #PRINT NOTIFICATIONS
                             print "Something"
 
-                        #Second, try blocking the hostile opponentDiceList
-                        if (self.try_blocking_attack(opponentDiceList[index], ownKingSquare, board)):
+                        #Second, try blocking the hostile self.opponentDiceList
+                        if (self.try_blocking_attack(self.opponentDiceList[index], self.ownKingSquare, board)):
                             #PRINT NOTIFICATIONS
                             return True
                         else:
@@ -76,7 +82,7 @@ class Computer(Player):
                             print "Something"
                         
                         #Third, try moving the king as a last resort and make sure the new position is safe
-                        if (self.try_moving_king(ownKingSquare, board)):
+                        if (self.try_moving_king(self.ownKingSquare, board)):
                             #PRINT NOTIFICATIONS
                             return True
                         else:
@@ -95,10 +101,10 @@ class Computer(Player):
         #PRINT NOTIFICATIONS
         for index in range(0, self.TEAMSIZE):
             #Use the die to hunt only if it is not a king and hasn't been captured yet
-            if (not ownDiceList[index].king and not ownDiceList[index].captured):
+            if (not self.ownDiceList[index].king and not self.ownDiceList[index].captured):
                 for jindex in range (0, self.TEAMSIZE):
-                    if (not opponentDiceList[jindex].captured):
-                        if (Player.make_a_move(self, ownDiceList[index].row, ownDiceList[index].column, opponentDiceList[jindex].row, opponentDiceList[jindex].column, board, self.helpModeOn, 0)):
+                    if (not self.opponentDiceList[jindex].captured):
+                        if (Player.make_a_move(self, self.ownDiceList[index].row, self.ownDiceList[index].column, self.opponentDiceList[jindex].row, self.opponentDiceList[jindex].column, board, self.helpModeOn, 0)):
                             #PRINT NOTIFICATIONS
                             return True
 
@@ -107,13 +113,13 @@ class Computer(Player):
         #PRINT NOTIFICATIONS
         # For all uncaptured opponent dice
         for index in range (0, self.TEAMSIZE):
-            if (not opponentDiceList[index].captured):
+            if (not self.opponentDiceList[index].captured):
                 #Go through all of own uncaptured dice and check chances of hostile takeover
                 for counter in range (0, self.TEAMSIZE):
-                    if (not ownDiceList[counter].captured):
-                        if (Player.is_valid_destination(self, opponentDiceList[index], calculationBoard.get_square_at_location(ownDiceList[counter].row, ownDiceList[counter].column))):
-                            if (Player.is_path_valid(self, opponentDiceList[index], calculationBoard.get_square_at_location(ownDiceList[counter].row, ownDiceList[counter].column)), calculationBoard):
-                                if (self.protect_the_dice(calculationBoard.get_square_at_location(ownDiceList[counter].row, ownDiceList[counter].column), board)):
+                    if (not self.ownDiceList[counter].captured):
+                        if (Player.is_valid_destination(self, self.opponentDiceList[index], calculationBoard.get_square_at_location(self.ownDiceList[counter].row, self.ownDiceList[counter].column))):
+                            if (Player.is_path_valid(self, self.opponentDiceList[index], calculationBoard.get_square_at_location(self.ownDiceList[counter].row, self.ownDiceList[counter].column), calculationBoard)):
+                                if (self.protect_the_dice(calculationBoard.get_square_at_location(self.ownDiceList[counter].row, self.ownDiceList[counter].column), board)):
                                     return True
 
 
@@ -126,27 +132,27 @@ class Computer(Player):
         #PRINT NOTIFICATIONS
         #For each of the die, go through every square in the gamboard and find the most optimal square to move in current state
         for index in range(0, self.TEAMSIZE):
-            if(not ownDiceList[index].king and not ownDiceList[index].captured):        #For every uncaptured soldier die
+            if(not self.ownDiceList[index].king and not self.ownDiceList[index].captured):        #For every uncaptured soldier die
                 for row in range(0, 8):                                               #Go through the entire board and                                                                                   
                     for col in range(0, 9):
-                        if (Player.is_valid_destination(self, ownDiceList[index], calculationBoard.get_square_at_location(row, col))):        #Check if valid dest
-                            if (Player.is_path_valid(self, ownDiceList[index], calculationBoard.get_square_at_location(row, col), board)):    #Check if valid path
+                        if (Player.is_valid_destination(self, self.ownDiceList[index], calculationBoard.get_square_at_location(row, col))):        #Check if valid dest
+                            if (Player.is_path_valid(self, self.ownDiceList[index], calculationBoard.get_square_at_location(row, col), board)):    #Check if valid path
                                 if (not self.is_in_danger(board.get_square_at_location(row, col), board)):                              #Check if safe
                                     #Compare distance to get to the king square from new location
-                                    distanceFromFinalDestination = abs(opponentKingSquare.row - row) + abs(opponentKingSquare.column - col)
+                                    distanceFromFinalDestination = abs(self.opponentKingSquare.row - row) + abs(self.opponentKingSquare.column - col)
                                     if (distanceFromFinalDestination < minDistance):                                            #Check if distance to king becomes minimum and assign
                                         minDistance = distanceFromFinalDestination
-                                        bestMoveCoordinates = [ownDiceList[index].row, ownDiceList[index].column, row, col]     #Stored in format startRow, startCol, endRow, endCol
+                                        bestMoveCoordinates = [self.ownDiceList[index].row, self.ownDiceList[index].column, row, col]     #Stored in format startRow, startCol, endRow, endCol
 
                                     #Compare distance to get to the key square from new location
-                                    distanceFromFinalDestination = abs(opponentKeySquare.row - row) + abs(opponentKeySquare.column - col)
+                                    distanceFromFinalDestination = abs(self.opponentKeySquare.row - row) + abs(self.opponentKeySquare.column - col)
                                     if (distanceFromFinalDestination < minDistance):                                            #Check if distance to key becomes minimum and assign
                                         minDistance = distanceFromFinalDestination
-                                        bestMoveCoordinates = [ownDiceList[index].row, ownDiceList[index].column, row, col]     #Stored in format startRow, startCol, endRow, endCol
+                                        bestMoveCoordinates = [self.ownDiceList[index].row, self.ownDiceList[index].column, row, col]     #Stored in format startRow, startCol, endRow, endCol
         
         #If a better path was found from the above intensive checking
         if (minDistance < 99):
-            if (Player.make_a_move(self, bestMoveCoordinates[0], bestMoveCoordinates[1], bestMoveCoordinates[2], bestMoveCoordinates[4], board, self.helpModeOn, 0)):
+            if (Player.make_a_move(self, bestMoveCoordinates[0], bestMoveCoordinates[1], bestMoveCoordinates[2], bestMoveCoordinates[3], board, self.helpModeOn, 0)):
                 return True
         
         #It won't ever come to this, but return true anyway lol
@@ -200,8 +206,8 @@ class Computer(Player):
 
             #See if any of the own dies can take that spot and block
             for i in range(0, self.TEAMSIZE):
-                if (not ownDiceList[i].king and not ownDiceList[i].captured):
-                    if (Player.make_a_move(self, ownDiceList[i].row, ownDiceList[i].column, hostileDice.row, hostileDice.column, board, self.helpModeOn, 0)):
+                if (not self.ownDiceList[i].king and not self.ownDiceList[i].captured):
+                    if (Player.make_a_move(self, self.ownDiceList[i].row, self.ownDiceList[i].column, hostileDice.row, hostileDice.column, board, self.helpModeOn, 0)):
                         return True
 
             #Condition to break while loop
@@ -221,8 +227,8 @@ class Computer(Player):
 
             #See if any of the own dies can take that spot and block
             for i in range(0, self.TEAMSIZE):
-                if (not ownDiceList[i].king and not ownDiceList[i].captured):
-                    if (Player.make_a_move(self, ownDiceList[i].row, ownDiceList[i].column, hostileDice.row, hostileDice.column, board, self.helpModeOn, 0)):
+                if (not self.ownDiceList[i].king and not self.ownDiceList[i].captured):
+                    if (Player.make_a_move(self, self.ownDiceList[i].row, self.ownDiceList[i].column, hostileDice.row, hostileDice.column, board, self.helpModeOn, 0)):
                         return True
 
             #Condition to break while loop
@@ -237,9 +243,9 @@ class Computer(Player):
         hostileDice = deepcopy(hostileOne)
 
         for i in range(0, self.TEAMSIZE):
-            if (not ownDiceList[i].captured):
+            if (not self.ownDiceList[i].captured):
                 #try to capture the hostile die
-                if (Player.make_a_move(self, ownDiceList[i].row, ownDiceList[i].column, hostileDice.row, hostileDice.column, board, self.helpModeOn, 0)):
+                if (Player.make_a_move(self, self.ownDiceList[i].row, self.ownDiceList[i].column, hostileDice.row, hostileDice.column, board, self.helpModeOn, 0)):
                     return True
         
         return False
@@ -299,9 +305,9 @@ class Computer(Player):
 
         for index in range(0, self.TEAMSIZE):
             #This even considers threat from the king and just not normal soldier attacks
-            if (not opponentDiceList[index].captured):
-                if (Player.is_valid_destination(self, opponentDiceList[index], squareAtRisk)):
-                    if (Player.is_path_valid(self, opponentDiceList[index], squareAtRisk, board)):
+            if (not self.opponentDiceList[index].captured):
+                if (Player.is_valid_destination(self, self.opponentDiceList[index], squareAtRisk)):
+                    if (Player.is_path_valid(self, self.opponentDiceList[index], squareAtRisk, board)):
                         return True
         
         return False
@@ -313,25 +319,17 @@ player = Human()
 comp = Computer()
 bv.draw_board(boa)
 
-player.play(1, 1, 2, 1, boa)
-bv.draw_board(boa)
 comp.play(boa, False)
 bv.draw_board(boa)
 player.play(1, 1, 2, 5, boa)
 bv.draw_board(boa)
 comp.play(boa, False)
 bv.draw_board(boa)
-player.play(1, 9, 2, 5, boa)
+comp.play(boa, False)
 bv.draw_board(boa)
-player.play(8, 6, 2, 6, boa)
+comp.play(boa, False)
 bv.draw_board(boa)
-player.play(2, 6, 3, 6, boa)
-bv.draw_board(boa)
-player.play(1, 7, 2, 6, boa)
-bv.draw_board(boa)
-player.play(1, 6, 7, 6, boa)
-bv.draw_board(boa)
-player.play(1, 2, 1, 1, boa)
+comp.play(boa, False)
 bv.draw_board(boa)
 
 
