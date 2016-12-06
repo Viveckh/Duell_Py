@@ -10,7 +10,7 @@ class BoardView:
 
     def draw_board(self, board):
         for currentRow in reversed(xrange(BoardView.ROWS)):
-            for currentCol in reversed(xrange(BoardView.COLUMNS)):
+            for currentCol in range(0, BoardView.COLUMNS):
                 if (board.get_square_resident(currentRow, currentCol) != None):
                     if (board.get_square_resident(currentRow, currentCol).botOperated):
                         sys.stdout.write("C%s%s\t" %(board.get_square_resident(currentRow, currentCol).top, board.get_square_resident(currentRow, currentCol).left))
@@ -19,8 +19,3 @@ class BoardView:
                 else:
                     sys.stdout.write("-\t")
             sys.stdout.write("\n")
-
-#Main at the moment
-board = Board()
-bv = BoardView()
-bv.draw_board(board)

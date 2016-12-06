@@ -41,5 +41,14 @@ class Board:
                     self.bots[currentCol].set_coordinates(currentRow, currentCol)
                     self.bots[currentCol].botOperated = True
 
+    #Gets square resident if rows and column coordinates within the board is given
     def get_square_resident(self, row, col):
             return self.gameBoard[row][col].resident
+
+    #Sets square resident, dice can be null if the square has to be set vacant
+    def set_square_resident_dice(self, row, col, dice):
+        self.gameBoard[row][col].resident = dice
+
+    #Sets square resident as captured or uncaptured based on the boolean value passed to the captured parameter
+    def set_square_resident_captured(self, row, col, captured):
+        self.gameBoard[row][col].resident.captured = captured
