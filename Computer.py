@@ -1,8 +1,6 @@
 from copy import deepcopy
 from Player import Player
-from Human import Human
 from Board import Board
-from BoardView import BoardView
 
 class Computer(Player):
     def __init__(self):
@@ -47,7 +45,6 @@ class Computer(Player):
             if (not self.ownDiceList[index].captured):
                 #Try to capture the king die
                 if (Player.make_a_move(self, self.ownDiceList[index].row, self.ownDiceList[index].column, self.opponentKingSquare.row, self.opponentKingSquare.column, board, self.helpModeOn, 0)):
-                    print "king captured"
                     return True
                 #Try to capture the key square by the king die
                 if (self.ownDiceList[index].king):
@@ -312,41 +309,5 @@ class Computer(Player):
                         return True
         
         return False
-
-#Main at the moment
-boa = Board()
-bv = BoardView()
-player = Human()
-comp = Computer()
-bv.draw_board(boa)
-
-comp.play(boa, False)
-bv.draw_board(boa)
-player.play(1, 1, 2, 5, boa)
-bv.draw_board(boa)
-comp.play(boa, False)
-bv.draw_board(boa)
-player.play(2, 5, 5, 5, boa)
-bv.draw_board(boa)
-comp.play(boa, False)
-bv.draw_board(boa)
-comp.play(boa, False)
-bv.draw_board(boa)
-comp.play(boa, False)
-bv.draw_board(boa)
-comp.play(boa, False)
-bv.draw_board(boa)
-comp.play(boa, False)
-bv.draw_board(boa)
-comp.play(boa, False)
-bv.draw_board(boa)
-comp.play(boa, False)
-bv.draw_board(boa)
-comp.play(boa, False)
-bv.draw_board(boa)
-comp.play(boa, False)
-bv.draw_board(boa)
-comp.play(boa, False)
-bv.draw_board(boa)
 
 
