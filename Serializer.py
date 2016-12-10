@@ -42,11 +42,9 @@ class Serializer:
 
     #pkg is a dictionary object with entries of board, botWins, humanWins, nextPlayer
     def read_from_file(self, filepath, pkg):
-        self.fileName = filepath
-
         try:
             #Opening the file
-            loadFile = open(self.fileName, 'r')
+            loadFile = open(filepath, 'r')
 
             #Step 1: Reading the line with the Board Text
             loadFile.readline()
@@ -86,9 +84,9 @@ class Serializer:
                     #Parse the next player
                     if re.match("(\\s*)[Nn]ext(\\s+)[Pp]layer(.*)", line):
                         if re.match("(.*):(.*)[Cc]omputer(.*)", line):
-                            pkg['nextPlayer'] = "computer"
+                            pkg['nextPlayer'] = "Computer"
                         else:
-                            pkg['nextPlayer'] = "human"
+                            pkg['nextPlayer'] = "Human"
             
             #Closing file and returning
             loadFile.close()
@@ -207,16 +205,3 @@ class Serializer:
                         #Append the top and left value of the occupying die
                         self.serializedGameBoard[row][col] += str(board.get_square_resident(row, col).top)
                         self.serializedGameBoard[row][col] += str(board.get_square_resident(row, col).right)
-
-
-
-serial = Serializer()
-pkg = {}
-pkg['board'] = Board()
-pkg['botWins'] = None
-pkg['humanWins'] = None
-pkg['nextPlayer'] = None
-serial.read_from_file("C:/Duell_LastGameSerialization.txt", pkg)
-print pkg['botWins']
-print pkg['humanWins']
-print pkg['nextPlayer']

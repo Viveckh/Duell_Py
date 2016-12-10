@@ -6,6 +6,7 @@ class BoardView:
     COLUMNS = 9
 
     def draw_board(self, board):
+        print "\n"
         for currentRow in reversed(xrange(BoardView.ROWS)):
             sys.stdout.write("%s\t" %abs(currentRow + 1))
             for currentCol in range(0, BoardView.COLUMNS):

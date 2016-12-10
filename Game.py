@@ -6,7 +6,6 @@ from BoardView import BoardView
 from Computer import Computer
 from Human import Human
 from Notifications import Notifications
-from Serializer import Serializer
 
 class Game:
 
@@ -31,8 +30,6 @@ class Game:
         self.endCol = 0
         #1 for vertical first, 2 for lateral first
         self.path = 0
-        self.serializer = Serializer()
-
 
     #Implements a Round.
     #Return value is 'h' for human winner, 'c' for computer winner, 'S' for serializing during computer's turn, 's' for serializing during human's turn
@@ -123,7 +120,6 @@ class Game:
             self.notifications.msg_serialize_prompt()
             input = getche()
             if (input == 'y' or input == 'Y'):
-                self.serializer.write_to_file(self.board, 4, 3, "Human")
                 return True
             if (input == 'n' or input == 'N'):
                 return False
@@ -204,7 +200,7 @@ class Game:
                 input = getche()
                 try:
                     if (int(input) == 1 or int(input) == 2):
-                        self.path = input
+                        self.path = int(input)
                         break
                 except ValueError:
                     self.notifications.msg_improper_input()
@@ -228,8 +224,4 @@ class Game:
             self.computerTurn = True
             self.notifications.msg_toss_results("Computer", self.humanDieToss, self.computerDieToss)
 
-
-#Main at the moment
-game = Game()
-game.implement_game(False, )
 

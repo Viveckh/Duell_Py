@@ -133,7 +133,7 @@ class Notifications:
 
 	# Prompt to ask file path
 	def msg_enter_file_path(self):
-		print "Enter a valid file path to restore the tournament :- "
+		print "\nEnter a valid file path to restore the tournament :- "
 
 	"""
 	THE FOLLOWING FUNCTIONS ARE ESPECIALLY MEANT TO GUIDE THE USER THROUGH COMPUTER'S THOUGHT PROCESS
