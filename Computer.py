@@ -1,9 +1,22 @@
+# coding: utf-8
+# Computer Class
+# Implements Computer strategies to evaluate, prioritize, select and initiate the best move on behalf of the computer.
+#
+
+"""	************************************************************
+* Name:			Vivek Pandey								*
+* Project:		Duell Python								*
+* Class:		CMPS 366									*
+* Date:			12/10/2016									*
+************************************************************ """
+
 from copy import deepcopy
 from Player import Player
 from Board import Board
 from Notifications import Notifications
 
 class Computer(Player):
+    #Default Constructor
     def __init__(self):
         Player.__init__(self)
         self.TEAMSIZE = 9
@@ -15,7 +28,31 @@ class Computer(Player):
         self.opponentKingSquare = None
         self.opponentKeySquare = None
         self.notifications = Notifications()
+    
+    """ *********************************************************************
+    Function Name: play
 
+    Purpose: Calculate the best move on behalf of the Computer Player and process the move
+
+    Parameters: 
+    board, the current state of the board where the move needs to be made
+    helpModeOn, Boolean value to determine whether the function call is made by human under help mode
+
+    Return Value: true if a move is made successfully, false if no move made
+
+    Local Variables: 
+    calculationBoard, a copy of current board to use for move calculation purposes
+    ownKingSquare, a copy of the king square of the calling team
+    ownKeySquare, a copy of the key square of the calling team
+    opponentKingSquare, a copy of king square of passive team
+    opponentKeySquare, a copy of key square of passive team
+    index & jindex, counter for loops
+    bestMoveCoordinates, list to store start and end coordinates of the best move calculated so far
+    minDistance, integer to store the minimum distance of a move so far
+    distanceFromFinalDestination,  integer to store the distance from key pieces in current calculated move
+
+    Assistance Received: none
+    ********************************************************************* """
     #Prioritizes, calculates and makes proper move for Computer on its turn
     def play(self, board, helpModeOn):
         self.helpModeOn = helpModeOn
@@ -156,6 +193,25 @@ class Computer(Player):
         #It won't ever come to this, but return true anyway lol
         return True
     
+
+    """ *********************************************************************
+    Function Name: try_blocking_attack
+
+    Purpose: To attempt to make a blocking move on a hostile dice
+
+    Parameters:
+    hostileOne, a Dice object that needs to be blocked
+    victim, the square to be protected from hostile dice
+    board, the board where the blocking needs to be done (passed by ref)
+
+    Return Value: true if blocking move successful, false if unsuccessful
+
+    Local Variables:
+    path, integer to store the potential path that will be used by the hostile dice to get to squareToProtect
+
+    Assistance Received: none
+    ********************************************************************* """
+    # Attempts to block the path of an opponent who is a potential threat
     def try_blocking_attack(self, hostileOne, victim, board):
         #Duplicating some function params to prevent the modification of original ReferenceError
         hostileDice = deepcopy(hostileOne)
@@ -194,6 +250,26 @@ class Computer(Player):
         else:
             return False
 
+    
+    """ *********************************************************************
+    Function Name: find_block_point_vertically
+
+    Purpose: To Find a block point in vertical direction to block a hostile dice
+            Called in conjunction with above try_blocking_attack() function
+
+    Parameters:
+    Normally Passed by reference from the above function of TryBlockingAttack
+    hostileDice, a Dice object that needs to be blocked (passed by ref)
+    squareToProtect, the square to be protected from hostile dice (passed by ref)
+    board, the board where the blocking needs to be done (passed by ref)
+
+    Return Value: true if blocking successful, false if unsuccessful
+
+    Local Variables: none
+
+    Assistance Received: none
+    ********************************************************************* """
+    # Finds a co-ordinate to place blocking dice on the vertical route
     def find_block_point_vertically(self, hostileDice, squareToProtect, board):
         while True:
             #Bump up/down the coordinates to check first
@@ -215,6 +291,26 @@ class Computer(Player):
         #If it can't find a block point even after traversing through all the legal rows, return False
         return False
 
+
+    """ *********************************************************************
+    Function Name: find_block_point_laterally
+
+    Purpose: To Find a block point in lateral direction to block a hostile dice
+    Called in conjunction with above try_blocking_attack() function
+
+    Parameters:
+    Normally Passed by reference from the above function of TryBlockingAttack
+    hostileDice, a Dice object that needs to be blocked (passed by ref)
+    squareToProtect, the square to be protected from hostile dice (passed by ref)
+    board, the board where the blocking needs to be done (passed by ref)
+
+    Return Value: true if blocking successful, false if unsuccessful
+
+    Local Variables: none
+
+    Assistance Received: none
+    ********************************************************************* """
+    # Finds a co-ordinate to place blocking dice on the lateral route
     def find_block_point_laterally(self, hostileDice, squareToProtect, board):
         while True:
             #Bump up/down the coordinates to check first
@@ -236,6 +332,22 @@ class Computer(Player):
         #If it can't find a block point even after traversing through all the legal columns, return False
         return False
 
+    """ *********************************************************************
+    Function Name: try_capturing_the_hostile_opponent
+
+    Purpose: To try and capture a hostile opponent
+
+    Parameters:
+    hostileOne, the hostile dice that needs to be captured
+    board, the game board in context (passed by ref)
+
+    Return Value: true if capture successful, false if unsuccessful
+
+    Local Variables: none
+
+    Assistance Received: none
+    ********************************************************************* """
+    # Tries capturing a hostile opponent who is a potential threat
     def try_capturing_the_hostile_opponent(self, hostileOne, board):
         #Duplicating function params to prevent modification of the original params
         hostileDice = deepcopy(hostileOne)
@@ -248,6 +360,22 @@ class Computer(Player):
         
         return False
     
+    """ *********************************************************************
+    Function Name: try_moving_king
+
+    Purpose: To move the king to protect from opponent attack
+
+    Parameters:
+    king, the square where the king is located
+    board, the game board in context
+
+    Return Value: true if the move successful, false if unsuccessful
+
+    Local Variables: none
+
+    Assistance Received: none
+    ********************************************************************* """
+    # Tries moving the king to a secure position
     def try_moving_king(self, king, board):
         kingSquare = deepcopy(king)
 
@@ -280,7 +408,23 @@ class Computer(Player):
                         return True
 
         return False
+    
+    """ *********************************************************************
+    Function Name: protect_the_dice
 
+    Purpose: To move a dice under threat to a safe location
+
+    Parameters:
+    potentialVictim, the square that needs to be moved to a safe location
+    board, the game board in context (passed by ref)
+
+    Return Value: true if move successful, false if unsuccessful
+
+    Local Variables: none
+
+    Assistance Received: none
+    ********************************************************************* """
+    # Tries protecting a dice under threat
     def protect_the_dice(self, potentialVictim, board):
         #Making duplicate copies of necessary function params for modification
         squareAtRisk = deepcopy(potentialVictim)
@@ -295,7 +439,23 @@ class Computer(Player):
                                 return True
         
         return False
+    
+    """ *********************************************************************
+    Function Name: is_in_danger
 
+    Purpose: To check and see if the given square is at risk in the given gameboard
+
+    Parameters:
+    potentialVictim, the square that needs to be checked if it is in danger
+    gameBoard, the game board in context
+
+    Return Value: true if square at risk, false if safe
+
+    Local Variables: none
+
+    Assistance Received: none
+    ********************************************************************* """
+    # Checks if a given square is at risk from opponent dices
     def is_in_danger(self, potentialVictim, gameBoard):
         #Making duplicate copies of function params that were supposed to be passed by Value 
         squareAtRisk = deepcopy(potentialVictim)

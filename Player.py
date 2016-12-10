@@ -1,11 +1,26 @@
+# coding: utf-8
+# Player Class
+# Implements the basic set of strategies for any player like traversing the board and determining path choices, validating and processing moves, 
+# changing dice orientation based on the rolls, capturing and eliminating opponent dices.
+#
+
+"""	************************************************************
+* Name:			Vivek Pandey								*
+* Project:		Duell Python								*
+* Class:		CMPS 366									*
+* Date:			12/10/2016									*
+************************************************************ """
+
 from copy import deepcopy
 from Board import Board
 from Notifications import Notifications
 
 class Player:
+    #Class Variables
     printStatus = True
     printNotifications = True
 
+    #Default Constructor
     def __init__(self):
         self.pathChoice = 0
         self.multiplePathPossible = False
@@ -15,6 +30,28 @@ class Player:
         self.counterColumnsTraversed = 0
         self.notifications = Notifications()
 
+    """
+    #
+    # NEW SECTION: THESE FUNCTIONS CAN BE USED TO CHANGE STATES EITHER IN A TEMPORARY OR A PERMANENT GAME BOARD
+    #
+    """
+
+    """ *********************************************************************
+    Function Name: roll_up
+
+    Purpose: To Roll up a dice by one row and change the appropriate dice & board values accordingly to reflect changes
+
+    Parameters:
+    dice, the dice to be moved (passed by ref)
+    board, the board in context (passed by ref)
+
+    Return Value: none
+
+    Local Variables: none
+
+    Assistance Received: none
+    ********************************************************************* """
+    # Does one up roll of the dice
     def roll_up(self, dice, board):
         self.tempStorage1 = dice.front
         self.tempStorage2 = dice.rear
@@ -35,6 +72,22 @@ class Player:
         
         board.set_square_resident_dice(dice.row, dice.column, dice)
 
+    """ *********************************************************************
+    Function Name: roll_down
+
+    Purpose: To Roll down a dice by one row and change the appropriate dice & board values accordingly to reflect changes
+
+    Parameters:
+    dice, the dice to be moved (passed by ref)
+    board, the board in context (passed by ref)
+
+    Return Value: none
+
+    Local Variables: none
+
+    Assistance Received: none
+    ********************************************************************* """
+    # Does one down roll of the dice
     def roll_down(self, dice, board):
         self.tempStorage1 = dice.front
         self.tempStorage2 = dice.rear
@@ -55,6 +108,23 @@ class Player:
         
         board.set_square_resident_dice(dice.row, dice.column, dice)
 
+
+    """ *********************************************************************
+    Function Name: roll_left
+
+    Purpose: To Roll left a dice by one column and change the appropriate dice & board values accordingly to reflect changes
+
+    Parameters:
+    dice, the dice to be moved (passed by ref)
+    board, the board in context (passed by ref)
+
+    Return Value: none
+
+    Local Variables: none
+
+    Assistance Received: none
+    ********************************************************************* """
+    # Does one left roll of the dice
     def roll_left(self, dice, board):
         self.tempStorage1 = dice.left
         self.tempStorage2 = dice.right
@@ -75,6 +145,23 @@ class Player:
         
         board.set_square_resident_dice(dice.row, dice.column, dice)
 
+
+    """ *********************************************************************
+    Function Name: roll_right
+
+    Purpose: To Roll right a dice by one column and change the appropriate dice & board values accordingly to reflect changes
+
+    Parameters:
+    dice, the dice to be moved (passed by ref)
+    board, the board in context (passed by ref)
+
+    Return Value: none
+
+    Local Variables: none
+
+    Assistance Received: none
+    ********************************************************************* """
+    # Does one right roll of the dice
     def roll_right(self, dice, board):
         self.tempStorage1 = dice.left
         self.tempStorage2 = dice.right
@@ -95,6 +182,28 @@ class Player:
         
         board.set_square_resident_dice(dice.row, dice.column, dice)
     
+    """
+    #
+    # NEW SECTION: THE FOLLOWING FUNCTIONS WILL FORM TEMPORARY PASSED-BY-VALUE GAME OBJECTS AND CHECK THE VALIDITY OF ROUTE/DESTINATION
+    #
+    """
+
+    """ *********************************************************************
+    Function Name: is_valid_destination
+
+    Purpose: To check if the given square is a valid destination distance-wise for the given dice
+
+    Parameters:
+    origin, the dice as the origin
+    dest, the destination square
+
+    Return Value: true if a valid destination, false if not
+
+    Local Variables: none
+
+    Assistance Received: none
+    ********************************************************************* """
+    # Checks if the destination is a valid one
     def is_valid_destination(self, origin, dest):
         #Making duplicate copies of function parameters to avoid modifying original reference
         dice = deepcopy(origin)
@@ -111,6 +220,24 @@ class Player:
             Player.printNotifications and self.notifications.msg_running_over_own_dice()
         return False
 
+    """ *********************************************************************
+    Function Name: is_path_valid
+    Purpose: To find an appropriate path, if exists, between the origin and destination
+            It sets the pathChoice varible with the proper path number
+            1 for vertical & lateral, 2 for lateral & vertical, 3 for vertical only, 4 for lateral only
+
+    Parameters:
+    origin, the dice as the origin
+    dest, the destination square
+    gameBoard, the board in context
+
+    Return Value: true if a path exists, false if not
+
+    Local Variables: none
+
+    Assistance Received: none
+    ********************************************************************* """
+    # Checks the validity of a path to get from origin to destination square
     def is_path_valid(self, origin, dest, gameBoard):
         #The temporary dice jumps from one square to the other and checks if it is already occupied
 
@@ -183,6 +310,26 @@ class Player:
         #If moving from and to the current location, still true lol
         return True
 
+    """ *********************************************************************
+    Function Name: traversed_rows_without_blockade
+
+    Purpose: To traverse rows and make sure blockade don't exist
+            Used in conjunction with is_path_valid() function.
+            The passed by reference values are actually the temporary values passed by value in is_path_valid() function
+
+    Parameters:
+    The passed by reference values are actually the temporary values passed by value in is_path_valid() function
+    dice, the dice as the origin
+    dest, the destination square
+    gameBoard, the board in context
+
+    Return Value: true if traversal along rows successful without blockade, false otherwise
+
+    Local Variables: none
+
+    Assistance Received: none
+    ********************************************************************* """
+    # Returns true if traversal is successful without blockade until the destination row (The passed by reference dice is actually a temporary dice itself)
     def traversed_rows_without_blockade(self, dice, dest, gameBoard):
         #Still passed by reference cause in case of a 90 degree turn, we want the dice state preserved to call traversed_columns_without_blockade
 
@@ -215,6 +362,26 @@ class Player:
         #If it gets to this poiont without any false returns, it is a valid path anyway
         return True
     
+    """ *********************************************************************
+    Function Name: traversed_columns_without_blockade
+
+    Purpose: To traverse columns and make sure blockade don't exist
+            Used in conjunction with is_path_valid() function.
+            The passed by reference values are actually the temporary values passed by value in is_path_valid() function
+
+    Parameters:
+    The passed by reference values are actually the temporary values passed by value in IsPathValid() function
+    dice, the dice as the origin
+    dest, the destination square
+    gameBoard, the board in context
+
+    Return Value: true if traversal along columns successful without blockade, false otherwise
+
+    Local Variables: none
+
+    Assistance Received: none
+    ********************************************************************* """
+    # Returns true if traversal is successful without blockade until the destination column (The passed by reference dice is actually a temporary dice itself)
     def traversed_columns_without_blockade(self, dice, dest, gameBoard):
         #Making duplicate copies of function parameters to avoid modifying original reference
         destination = deepcopy(dest)
@@ -245,6 +412,35 @@ class Player:
         #If it gets to this poiont without any false returns, it is a valid path anyway
         return True
 
+    """
+    #
+    # NEW SECTION: THE FOLLOWING FUNCTIONS WILL ACTUALLY MODIFY THE REAL GAMEBOARD.
+    #
+    """
+
+    """ *********************************************************************
+    Function Name: make_a_move
+
+    Purpose: To validate the move from and to the given coordinates, and process it if valid
+
+    Parameters:
+    startRow, integer value of start row coordinate
+    startCol, integer value of start column coordinate
+    endRow, integer value of end row coordinate
+    endCol, integer value of end Column coordinate
+    board, the board in context where the move is to be made (passed by ref)
+    helpModeOn, boolean value determining whether the function is being called by Help Mode to act accordingly
+    path, the path selected by the human player in case of a 90 degree turn, if any
+
+    Return Value: true if move successful, false otherwise
+
+    Local Variables:
+    topValueAtStart, the top value of the dice at starting coordinate
+    rightValueAtStart, the right value of the dice at starting coordinate
+
+    Assistance Received: none
+    ********************************************************************* """
+    # Checks the validity of a given move, and performs it on the gameboard if valid
     def make_a_move(self, startRow, startCol, endRow, endCol, board, helpModeOn, path=0):
         """Check if destination is valid, then if path is valid
         Then, either make the move or log an error
@@ -304,6 +500,28 @@ class Player:
                 return True
         return False
 
+    #These two following functions will modify the actual gameboard. So pass the real game objects
+    # Make sure you check the validity of the path beforehand. Cause they won't do the checking
+
+    """ *********************************************************************
+    Function Name: keep_rolling_vertically
+
+    Purpose: To continue the move vertically until the dice reaches the destination row
+            Used in conjunction with the make_a_move() function
+            This modifies the actually gameboard in context, so be careful while using it
+
+    Parameters:
+    dice, the dice of origin
+    destination, the destination square to be reached
+    board, the board in context (will be modified permanently)
+
+    Return Value: none
+
+    Local Variables: none
+
+    Assistance Received: none
+    ********************************************************************* """
+    # Rolls the dice vertically until it is in the destination row
     def keep_rolling_vertically(self, dice, destination, board):
         self.counterRowsTraversed = 0
         while True:
@@ -317,6 +535,26 @@ class Player:
             if(dice.row == destination.row):
                 break 
     
+
+    """ *********************************************************************
+    Function Name: keep_rolling_laterally
+
+    Purpose: To continue the move laterally until the dice reaches the destination column
+    Used in conjunction with the make_a_move() function
+    This modifies the actually gameboard in context, so be careful while using it
+
+    Parameters:
+    dice, the dice of origin
+    destination, the destination square to be reached
+    board, the board in context (will be modified permanently)
+
+    Return Value: none
+
+    Local Variables: none
+
+    Assistance Received: none
+    ********************************************************************* """
+    # Rolls the die laterally until it is in the destination column
     def keep_rolling_laterally(self, dice, destination, board):
         self.counterColumnsTraversed = 0
         while True:

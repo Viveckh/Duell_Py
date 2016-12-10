@@ -1,9 +1,25 @@
+# coding: utf-8
+# Dice Class
+# Implements the properties of a dice object used in the game. 
+# The class consists of variables and functions to store and modify a dice’s face values, its coordinates within a game board, 
+# its controller (human or computer), its capture status, and whether it is a king. 
+#
+
+"""	************************************************************
+* Name:			Vivek Pandey								*
+* Project:		Duell Python								*
+* Class:		CMPS 366									*
+* Date:			12/10/2016									*
+************************************************************ """
+
 class Dice:
+    #Class Variables
     SUM_OF_OPPOSITE_SIDES = 7
     counterClockwiseDiceOrder1 = (1, 2, 6, 5, 1, 2, 6, 5)
     counterClockwiseDiceOrder2 = (3, 1, 4, 6, 3, 1, 4, 6)
     counterClockwiseDiceOrder3 = (2, 3, 5, 4, 2, 3, 5, 4)
 
+    #Default Constructor
     def __init__(self):
         
         self.row = 0
@@ -18,6 +34,21 @@ class Dice:
         self.botOperated = False
         self.captured = False
 
+    """ *********************************************************************
+    Function Name: set_beginning_orientation
+
+    Purpose: To set the remaining sides of a dice based on known sides at the beginning of game
+    
+    Parameters:
+    top, the top integer value of the dice
+    isBot, boolean value stating if the dice is bot operated
+    
+    Return Value: none
+
+    Local Variables: none besides loop counters
+
+    Assistance Received: none
+    ********************************************************************* """
     #Calculates & Sets the beginning orientation with face values of a dice in the home row
     def set_beginning_orientation(self, top, isBot):
         #Values given in program specs
@@ -49,6 +80,21 @@ class Dice:
                     self.right = Dice.SUM_OF_OPPOSITE_SIDES - self.left
 
 
+    """ *********************************************************************
+    Function Name: set_remaining_sides
+
+    Purpose: To set the remaining sides of a dice based on the known two (top-right for humans, top-left for bots)
+    
+    Parameters:
+    arg1, the top value of dice
+    arg2, the right value if a human dice, the left value if a bot dice
+    
+    Return Value: none
+    
+    Local Variables: none
+    
+    Assistance Received: had a discussion with Sujil Maharjan on how to approach this situation
+    ********************************************************************* """
     #Calculates & Sets the remaining sides of a dice given the Top-left or Top-Right sides
     def set_remaining_sides(self, arg1, arg2):
         #The first parameter is the top, the second one can either be left (for computer) or right (for human)
@@ -101,12 +147,13 @@ class Dice:
                 self.front = Dice.SUM_OF_OPPOSITE_SIDES - self.rear
                 break
 
-    #Sets the values of faces if the given dice is a king
+    #Sets the values of faces if the given dice is a king. Pass True or False as function parameter
     def set_king(self, value):
         self.king = value
         if (value == True):
             self.top = self.bottom = self.front = self.rear = self.left = self.right = 1
-
+    
+    # Sets the dice coordinates. Pass integer value for row and column as parameters
     def set_coordinates(self, row, column):
         self.row = row
         self.column = column

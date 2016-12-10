@@ -1,3 +1,15 @@
+# coding: utf-8
+# Class Serializer
+# Contains necessary member functions to serialize or restore a tournament to and from a text file.
+#
+
+"""	************************************************************
+* Name:			Vivek Pandey								*
+* Project:		Duell Python								*
+* Class:		CMPS 366									*
+* Date:			12/10/2016									*
+************************************************************ """
+
 import re
 from Board import Board
 
@@ -5,6 +17,7 @@ class Serializer:
     ROWS = 8
     COLUMNS = 9
 
+    #Default Constructor
     def __init__(self):
         self.fileName = "C:/Duell_LastGameSerialization.txt"
 
@@ -15,6 +28,24 @@ class Serializer:
                 self.serializedGameBoard[currentRow][currentCol] = None
 
     
+    """ *********************************************************************
+    Function Name: write_to_file
+
+    Purpose: To take the current tournament state and serialize it to a text file
+
+    Parameters:
+    board, the game board in context
+    botWins, the number of bot wins in tournament
+    humanWins, the number of human wins in tournament
+    nextPlayer, string consisting of the player who's turn is next
+
+    Return Value: true if write successful, false if couldn't open file
+
+    Local Variables: none
+
+    Assistance Received: none
+    ********************************************************************* """
+    # Writing serialized game state along with tournament history results to file
     def write_to_file(self, board, botWins, humanWins, nextPlayer):
         #Update the multidimensional string array for serialization first
         self.update_serialized_board(board)
@@ -40,6 +71,30 @@ class Serializer:
             print "An error has occurred while writing to the file."
         return False
 
+    """ *********************************************************************
+    Function Name: read_from_file
+
+    Purpose: To read a serialized file and restore the game in the actual game board
+
+    Parameters:
+    All the parameters will be passed by reference, so be careful using it
+    filepath, the file path with name for the serialization file to restore from
+    pkg, This is a dictionary that should consist of the following keys
+        board, the board to restore in
+        botWins, the number of bot wins
+        humanWins, the number of human wins
+        nextPlayer, string that consists of whose turn is next
+
+    Return Value: true if reading successful, false otherwise
+
+    Local Variables:
+    loadFile, read stream from file
+    line, string that consists of next line to parse
+    listOfValues, list with parsed values retrieved from a line
+
+    Assistance Received: none
+    ********************************************************************* """
+    # Reads a serialization file and stores in a multidimensional string array for restoring purposes
     #pkg is a dictionary object with entries of board, botWins, humanWins, nextPlayer
     def read_from_file(self, filepath, pkg):
         try:
@@ -94,7 +149,23 @@ class Serializer:
         except:
             print "An error has occurred while reading the file. File Format not acceptable."
             return False
+    
+    """ *********************************************************************
+    Function Name: set_board
 
+    Purpose: To set the actual game board based on the contents of a string multidimensional list populated by above read_from_file() function
+
+    Parameters: board, the game board to restore the state in
+
+    Return Value: none
+
+    Local Variables:
+    humanCount, botCount - the count of number of dices successfully restored in the gameboard
+    tempHumanIndex, tempBotIndex - the index of the current dice being restored in the gameboard
+
+    Assistance Received: none
+    ********************************************************************* """
+    # Sets the given board based on the contents of the string array restored by reading file
     def set_board(self, board):
         #This one is for going through the Human's player dices
         humanCount = 0
@@ -187,7 +258,21 @@ class Serializer:
                 board.humans[humanCount].captured = True
             humanCount += 1
 
+    
+    """ *********************************************************************
+    Function Name: update_serialized_board
 
+    Purpose: To read the current game board and save its state in a multi dimensional string array for purposes of writing to file
+
+    Parameters: board, the current game board
+
+    Return Value: none
+
+    Local Variables: none
+
+    Assistance Received: none
+    ********************************************************************* """
+    # Stores the game state in a multidimensional string array.
     def update_serialized_board(self, board):
         for row in reversed(xrange(Serializer.ROWS)):
             for col in range(0, Serializer.COLUMNS):

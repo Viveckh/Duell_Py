@@ -1,10 +1,37 @@
+# coding: utf-8
+# BoardView Class
+# Draws the updated game board to the console. Also can notify the user about the dices that haven’t been captured and are active on the game board.
+#
+
+"""	************************************************************
+* Name:			Vivek Pandey								*
+* Project:		Duell Python								*
+* Class:		CMPS 366									*
+* Date:			12/10/2016									*
+************************************************************ """
+
 from Board import Board
 import sys
 
 class BoardView:
+    #Class Variables
     ROWS = 8
     COLUMNS = 9
 
+    """ *********************************************************************
+    Function Name: draw_board
+    
+    Purpose: Draws the game board to the console
+    
+    Parameters: board, board object to be drawn
+    
+    Return Value: none
+    
+    Local Variables: none besides loop counters
+    
+    Assistance Received: none
+    ********************************************************************* """
+    # Draws the GameBoard to the console
     def draw_board(self, board):
         print "\n"
         for currentRow in reversed(xrange(BoardView.ROWS)):

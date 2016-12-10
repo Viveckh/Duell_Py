@@ -1,3 +1,14 @@
+# coding: utf-8
+# Class Notifications
+# Consists of a list of inline functions to display various error messages and notifications to the console. 
+#
+
+"""	************************************************************
+* Name:			Vivek Pandey								*
+* Project:		Duell Python								*
+* Class:		CMPS 366									*
+* Date:			12/10/2016									*
+************************************************************ """
 
 class Notifications:
 	SUM_OF_OPPOSITE_SIDES = 7

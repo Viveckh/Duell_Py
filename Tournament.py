@@ -1,3 +1,15 @@
+# coding: utf-8
+# Tournament Class
+# Runs a series of games, maintains the score for human and computer player, processes game serialization/restoration requests & declares winner.
+#
+
+"""	************************************************************
+* Name:			Vivek Pandey								*
+* Project:		Duell Python								*
+* Class:		CMPS 366									*
+* Date:			12/10/2016									*
+************************************************************ """
+
 from msvcrt import getche
 from copy import deepcopy
 
@@ -8,6 +20,7 @@ from Board import Board
 
 class Tournament:
 
+    #Default Constructor
     def __init__(self):
         #Serializer components
         self.serializer = Serializer()
@@ -26,7 +39,20 @@ class Tournament:
         #Notifications purposes
         self.notifications = Notifications()
 
-    
+    """ *********************************************************************
+    Function Name: play_tournament
+
+    Purpose: Runs a series of games and maintains score until user serializes or quits
+
+    Parameters: none
+
+    Return Value: none
+
+    Local Variables: none
+
+    Assistance Received: none
+    ********************************************************************* """
+    # Runs a Tournament
     def play_tournament(self):
         #Ask user if they want to restore the tournament from existing file
         self.notifications.msg_restore_from_file()
@@ -86,7 +112,22 @@ class Tournament:
 
         #Displaying the tournament results
         self.notifications.msg_display_results(self.botScore, self.humanScore)
-            
+
+
+    """ *********************************************************************
+    Function Name: serialize_game
+
+    Purpose: Processes the serialization request from the human player
+
+    Parameters: game, the current game object
+
+    Return Value: none
+
+    Local Variables: none
+
+    Assistance Received: none
+    ********************************************************************* """
+    # Serializes a Tournament state
     def serialize_game(self, game):
         #Store the next player in a string
         if self.gameResult == 'S':
@@ -100,7 +141,20 @@ class Tournament:
         else:
             self.notifications.msg_serialized("FAILED")
 
+    """ *********************************************************************
+    Function Name: wants_to_continue
 
+    Purpose: To Ask user if they want to continue. At any given time
+
+    Parameters: none
+
+    Return Value: True if user picks yes, False otherwise
+
+    Local Variables: none
+
+    Assistance Received: none
+    ********************************************************************* """
+    # Gets user's choice on whether to continue to another round
     def wants_to_continue(self):
         #Continue asking user for input until they press 'y' or 'n'
         while True:
