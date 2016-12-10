@@ -1,9 +1,11 @@
 from copy import deepcopy
 from Player import Player
 from Board import Board
+from Notifications import Notifications
 
 class Computer(Player):
     def __init__(self):
+        Player.__init__(self)
         self.TEAMSIZE = 9
         self.helpModeOn = False
         self.ownDiceList = None
@@ -12,6 +14,7 @@ class Computer(Player):
         self.ownKeySquare = None
         self.opponentKingSquare = None
         self.opponentKeySquare = None
+        self.notifications = Notifications()
 
     #Prioritizes, calculates and makes proper move for Computer on its turn
     def play(self, board, helpModeOn):
@@ -20,7 +23,7 @@ class Computer(Player):
 
         #Moving contents to a temporary board to prevent unintentional modification of actual gameboard during calculations
         calculationBoard = deepcopy(board)
-
+        
         #If help mode on, the algorithm will work favorably for human and against the Computer
         if (self.helpModeOn):
             #Setting Human as the owner and bot as the opponent
@@ -39,7 +42,7 @@ class Computer(Player):
             self.opponentKingSquare = deepcopy(calculationBoard.get_square_at_location(calculationBoard.get_human_king().row, calculationBoard.get_human_king().column))
             self.opponentKeySquare = deepcopy(calculationBoard.get_square_at_location(0, 4))
 
-        #PRINT NOTIFICATIONS
+        self.notifications.botsthink_trying_to_capture_opponentkeys()
         #STEP 1: Check if the opponent's king or key square can be captured. If yes, go for it
         for index in range(0, self.TEAMSIZE):
             if (not self.ownDiceList[index].captured):
@@ -51,7 +54,7 @@ class Computer(Player):
                     if (Player.make_a_move(self, self.ownDiceList[index].row, self.ownDiceList[index].column, self.opponentKeySquare.row, self.opponentKeySquare.column, board, self.helpModeOn, 0)):
                         return True
 
-        #PRINT NOTIFICATIONS
+        self.notifications.botsthink_checking_king_keysquare_safety()
         #STEP 2: Check if own king or keysquare is under potential attack. If yes, Save em
         for index in range(0, self.TEAMSIZE):
             if (not self.opponentDiceList[index].captured):
@@ -61,31 +64,28 @@ class Computer(Player):
                 if (Player.is_valid_destination(self, self.opponentDiceList[index], self.ownKingSquare)):
                     if (Player.is_path_valid(self, self.opponentDiceList[index], self.ownKingSquare, calculationBoard)):
                         #King is under imminent threat
-                        #PRINT NOTIFICATIONS
+                        self.notifications.botsthink_keythreat_detected("King")
 
                         #First, try capturing the hostile opponent
                         if (self.try_capturing_the_hostile_opponent(self.opponentDiceList[index], board)):
-                            #PRINT NOTIFICATIONS
+                            not self.helpModeOn and self.notifications.botsthink_hostile_opponent_captured("King")
                             return True
                         else:
-                            #PRINT NOTIFICATIONS
-                            print "Something"
+                            self.notifications.botsthink_hostile_opponent_uncapturable("King")
 
-                        #Second, try blocking the hostile self.opponentDiceList
+                        #Second, try blocking the hostile opponent
                         if (self.try_blocking_attack(self.opponentDiceList[index], self.ownKingSquare, board)):
-                            #PRINT NOTIFICATIONS
+                            not self.helpModeOn and self.notifications.botsthink_blocking_move_made()
                             return True
                         else:
-                            #PRINT NOTIFICATIONS
-                            print "Something"
+                            self.notifications.botsthink_blocking_move_not_possible()
                         
                         #Third, try moving the king as a last resort and make sure the new position is safe
                         if (self.try_moving_king(self.ownKingSquare, board)):
-                            #PRINT NOTIFICATIONS
+                            not self.helpModeOn and self.notifications.botsthink_king_moved()
                             return True
                         else:
-                            #PRINT NOTIFICATIONS
-                            print "Something"
+                            self.notifications.botsthink_unsafe_to_move_king()
                         
         
         """SAFETY OF THE KEY SQUARE HAS BEEN TAKEN CARE IN ABOVE STEPS ALREADY
@@ -96,19 +96,19 @@ class Computer(Player):
         We will not send king to capture opponents to make sure king is safe from opponent's trap
         king will only capture opponent king which is faciliated above"""
         
-        #PRINT NOTIFICATIONS
+        self.notifications.botsthink_trying_to_capture_opponent_dice()
         for index in range(0, self.TEAMSIZE):
             #Use the die to hunt only if it is not a king and hasn't been captured yet
             if (not self.ownDiceList[index].king and not self.ownDiceList[index].captured):
                 for jindex in range (0, self.TEAMSIZE):
                     if (not self.opponentDiceList[jindex].captured):
                         if (Player.make_a_move(self, self.ownDiceList[index].row, self.ownDiceList[index].column, self.opponentDiceList[jindex].row, self.opponentDiceList[jindex].column, board, self.helpModeOn, 0)):
-                            #PRINT NOTIFICATIONS
+                            not self.helpModeOn and self.notifications.botsthink_captured_opponent_dice()
                             return True
 
 
         #STEP 4: Protect any own dice that might be potentially captured by the opponent in the next step
-        #PRINT NOTIFICATIONS
+        self.notifications.botsthink_protect_dices_from_potential_captures()
         # For all uncaptured opponent dice
         for index in range (0, self.TEAMSIZE):
             if (not self.opponentDiceList[index].captured):
@@ -127,7 +127,7 @@ class Computer(Player):
         distanceFromFinalDestination = 99
         bestMoveCoordinates = []
 
-        #PRINT NOTIFICATIONS
+        self.notifications.botsthink_searching_ordinary_move()
         #For each of the die, go through every square in the gamboard and find the most optimal square to move in current state
         for index in range(0, self.TEAMSIZE):
             if(not self.ownDiceList[index].king and not self.ownDiceList[index].captured):        #For every uncaptured soldier die
@@ -163,7 +163,7 @@ class Computer(Player):
 
         #Get the path choice first
         Player.is_path_valid(self, hostileDice, squareToProtect, board)
-        path = Player.pathChoice
+        path = self.pathChoice
 
         #Then based on that path, check which coordinate is best suited to jam the route
         #First vertically, a 90 degree turn, then laterally

@@ -1,5 +1,6 @@
 from copy import deepcopy
 from Board import Board
+from Notifications import Notifications
 
 class Player:
     printStatus = True
@@ -12,6 +13,7 @@ class Player:
         self.tempStorage2 = 0
         self.counterRowsTraversed = 0
         self.counterColumnsTraversed = 0
+        self.notifications = Notifications()
 
     def roll_up(self, dice, board):
         self.tempStorage1 = dice.front
@@ -29,7 +31,7 @@ class Player:
         #This capture statement will only be executed at the destination square if path checking is done beforehand
         if (board.get_square_resident(dice.row, dice.column) != None):
             board.set_square_resident_captured(dice.row, dice.column, True)
-            #PRINT NOTIFICATIONS
+            Player.printNotifications and self.notifications.msg_captured_an_opponent()
         
         board.set_square_resident_dice(dice.row, dice.column, dice)
 
@@ -49,7 +51,7 @@ class Player:
         #This capture statement will only be executed at the destination square if path checking is done beforehand
         if (board.get_square_resident(dice.row, dice.column) != None):
             board.set_square_resident_captured(dice.row, dice.column, True)
-            #PRINT NOTIFICATIONS
+            Player.printNotifications and self.notifications.msg_captured_an_opponent()
         
         board.set_square_resident_dice(dice.row, dice.column, dice)
 
@@ -69,7 +71,7 @@ class Player:
         #This capture statement will only be executed at the destination square if path checking is done beforehand
         if (board.get_square_resident(dice.row, dice.column) != None):
             board.set_square_resident_captured(dice.row, dice.column, True)
-            #PRINT NOTIFICATIONS
+            Player.printNotifications and self.notifications.msg_captured_an_opponent()
         
         board.set_square_resident_dice(dice.row, dice.column, dice)
 
@@ -89,7 +91,7 @@ class Player:
         #This capture statement will only be executed at the destination square if path checking is done beforehand
         if (board.get_square_resident(dice.row, dice.column) != None):
             board.set_square_resident_captured(dice.row, dice.column, True)
-            #PRINT NOTIFICATIONS
+            Player.printNotifications and self.notifications.msg_captured_an_opponent()
         
         board.set_square_resident_dice(dice.row, dice.column, dice)
     
@@ -104,11 +106,9 @@ class Player:
             if (dice.top == abs(destination.row - dice.row) + abs(destination.column - dice.column)):
                 return True
             else:
-                #PRINT NOTIFICATIONS
-                return False
+                Player.printNotifications and self.notifications.msg_invalid_move()
         else:
-            #PRINT NOTIFICATIONS
-            return False 
+            Player.printNotifications and self.notifications.msg_running_over_own_dice()
         return False
 
     def is_path_valid(self, origin, dest, gameBoard):
@@ -155,7 +155,7 @@ class Player:
                 return True
 
             #If both the path couldn't return true, then the path is invalid
-            #PRINT NOTIFICATIONS
+            Player.printNotifications and self.notifications.msg_no_valid_path()
             return False
 
         """CASE 2
@@ -166,7 +166,7 @@ class Player:
                 self.pathChoice = 3
                 return True
             else:
-                #PRINT NOTIFICATIONS
+                Player.printNotifications and self.notifications.msg_no_valid_path()
                 return False
 
         """CASE 3
@@ -177,7 +177,7 @@ class Player:
                 self.pathChoice = 4
                 return True
             else:
-                #PRINT NOTIFICATIONS
+                Player.printNotifications and self.notifications.msg_no_valid_path()
                 return False
         
         #If moving from and to the current location, still true lol
@@ -254,7 +254,7 @@ class Player:
             if (self.is_path_valid(board.get_square_resident(startRow, startCol), board.get_square_at_location(endRow, endCol), board)):
                 #If help mode is on, no need to make the actual move, return true here and print suggestion
                 if (helpModeOn):
-                    #PRINT NOTIFICATIONS
+                    self.notifications.msg_helpmode_recommended_move(startRow + 1, startCol + 1, endRow + 1, endCol + 1, self.pathChoice)
                     return True
                 
                 topValueAtStart = board.get_square_resident(startRow, startCol).top
@@ -270,8 +270,7 @@ class Player:
                     
                     #Display a notification if the user's choice of path wasn't valid and had to be overridden by the next best route
                     if (path != self.pathChoice):
-                        #PRINT NOTIFICATIONS
-                        print "Nothing"
+                        Player.printNotifications and self.notifications.msg_90degree_path_selection_not_processed()
                 
                 #Start the rolls
 
@@ -279,29 +278,29 @@ class Player:
                 if (self.pathChoice == 1):
                     self.keep_rolling_vertically(board.get_square_resident(startRow, startCol), board.get_square_at_location(endRow, endCol), board)
                     self.keep_rolling_laterally(board.get_square_resident(startRow + self.counterRowsTraversed, startCol), board.get_square_at_location(endRow, endCol), board)
-                    #PRINT NOTIFICATIONS
+                    self.notifications.msg_nature_of_path_taken("VERTICAL & LATERAL")
 
                 #First Laterally, a 90 degree turn, then vertically
                 elif (self.pathChoice == 2):
                     self.keep_rolling_laterally(board.get_square_resident(startRow, startCol), board.get_square_at_location(endRow, endCol), board)
                     self.keep_rolling_vertically(board.get_square_resident(startRow, startCol + self.counterColumnsTraversed), board.get_square_at_location(endRow, endCol), board)
-                    #PRINT NOTIFICATIONS
+                    self.notifications.msg_nature_of_path_taken("LATERAL & VERTICAL")
 
                 #Vertically only
                 elif (self.pathChoice == 3):
                     self.keep_rolling_vertically(board.get_square_resident(startRow, startCol), board.get_square_at_location(endRow, endCol), board)
-                    #PRINT NOTIFICATIONS
+                    self.notifications.msg_nature_of_path_taken("VERTICAL")
 
                 #Laterally only
                 elif (self.pathChoice == 4):
                     self.keep_rolling_laterally(board.get_square_resident(startRow, startCol), board.get_square_at_location(endRow, endCol), board)
-                    #PRINT NOTIFICATIONS
+                    self.notifications.msg_nature_of_path_taken("LATERAL")
 
                 else:
-                    #PRINT NOTIFICATIONS
+                    Player.printNotifications and self.notifications.msg_crashed_while_making_the_move()
                     return False
                 
-                #PRINT NOTIFICATIONS
+                self.notifications.msg_move_description(startRow + 1, startCol + 1, endRow + 1, endCol + 1, topValueAtStart, rightValueAtStart, board.get_square_resident(endRow, endCol).top, board.get_square_resident(endRow, endCol).right, board.get_square_resident(endRow, endCol).botOperated)	# +1 To compensate for 1 offset in the array indexes
                 return True
         return False
 

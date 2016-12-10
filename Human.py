@@ -1,14 +1,19 @@
 from Player import Player
 from Board import Board
+from Notifications import Notifications
 
 class Human(Player):
+    
+    def __init__(self):
+        self.notifications = Notifications()
+    
     #Validates user's Input, Validates user's move and performs the move as instructed by human player
     def play(self, startRow, startCol, endRow, endCol, board, path=0):
         Player.printNotifications = True
 
         if (self.index_out_of_bounds(startRow, startCol, endRow, endCol)):
             #Log error here
-            #PRINT NOTIFICATIONS
+            self.notifications.msg_input_out_of_bounds()
             return False
         
         #Decrementing the input values to match the gameboard internal representation in list
@@ -26,10 +31,10 @@ class Human(Player):
                 else:
                     return False
             else:
-                #PRINT NOTIFICATIONS
+                self.notifications.msg_wrong_dice()
                 return False
         else:
-            #PRINT NOTIFICATIONS
+            self.notifications.msg_no_dice_to_move()
             return False
     
     

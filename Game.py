@@ -5,6 +5,7 @@ from Board import Board
 from BoardView import BoardView
 from Computer import Computer
 from Human import Human
+from Notifications import Notifications
 
 class Game:
 
@@ -12,6 +13,7 @@ class Game:
         #GameBoard, display and notification objects
         self.board = Board()
         self.boardView = BoardView()
+        self.notifications = Notifications()
         #Player objects
         self.human = Human()
         self.computer = Computer()
@@ -52,12 +54,12 @@ class Game:
             refresh = False
             #If it is computer's turn
             if self.computerTurn:
-                #PRINT NOTIFICATIONS
+                self.notifications.msg_turns("COMPUTER'S TURN")
                 if (self.computer.play(self.board, False)):
                     #Transfer Controls
                     self.computerTurn = False
                     self.humanTurn = True
-                    #PRINT NOTIFICATIONS
+                    self.notifications.msg_turns("BOARD AFTER COMPUTER'S MOVE")
                     refresh = True  #Using this boolean to prevent human's loop from running immediately
                 else:
                     continue
@@ -65,19 +67,19 @@ class Game:
             #If it is human's Turn
             if not refresh:
                 if self.humanTurn:
-                    #PRINT NOTIFICATIONS
+                    self.notifications.msg_turns("YOUR TURN")
                     if self.turn_help_mode_on():
-                        #PRINT NOTIFICATIONS
+                        self.notifications.msg_helpmode_on()
                         #Calling computer Play in Help Mode
-                        computer.play(self.board, True)
+                        self.computer.play(self.board, True)
 
                     self.get_user_input()
                     if (self.human.play(self.startRow, self.startCol, self.endRow, self.endCol, self.board, self.path)):
                         self.humanTurn = False
                         self.computerTurn = True    #Transferring controls
-                        #PRINT NOTIFICATIONS
+                        self.notifications.msg_turns("BOARD AFTER HUMAN'S MOVE")
                     else:
-                        #PRINT NOTIFICATIONS
+                        self.notifications.msg_invalid_move()
                         continue
             
             #After the move is made
@@ -88,10 +90,10 @@ class Game:
             if(self.game_over_condition_met()):
                 #Whoever just received the control is the one who lost
                 if self.humanTurn:
-                    #PRINT NOTIFICATIONS
+                    self.notifications.msg_game_over("COMPUTER")
                     return 'c'  #Bot Winner
                 else:
-                    #PRINT NOTIFICATIONS
+                    self.notifications.msg_game_over("HUMAN")
                     return 'h'  #Human Winner
 
             """Stop the game and return if user wants to serialize
@@ -103,27 +105,26 @@ class Game:
                     return 's'
 
     def turn_help_mode_on(self):
-        #PRINT NOTIFICATIONS
         #Continue asking user for input until they press 'y' or 'n'
-        print "want to turn on help?"
         while True:
+            self.notifications.msg_help_mode_prompt()
             input = getche()
             if (input == 'y' or input == 'Y'):
                 return True
             if (input == 'n' or input == 'N'):
                 return False
-            #PRINT NOTIFICATIONS
+            self.notifications.msg_improper_input()
 
     def user_wants_to_serialize(self):
-        #PRINT NOTIFICATIONS
         #Continue asking user for input until they press 'y' or 'n'
         while True:
+            self.notifications.msg_serialize_prompt()
             input = getche()
             if (input == 'y' or input == 'Y'):
                 return True
             if (input == 'n' or input == 'N'):
                 return False
-            #PRINT NOTIFICATIONS
+            self.notifications.msg_improper_input()
     
     def game_over_condition_met(self):
         #If one of the kings captured
@@ -152,61 +153,59 @@ class Game:
         self.endCol = 0
         self.path = 0
 
-        print "Make a move: "
-        #PRINT NOTIFICATIONS
-        #Continue asking user for input until they press all the digits
+        #Continue asking user for input until they press all the digits        
+        #Ask for origin row
         while True:
+            self.notifications.msg_enter_origin_row()
             input = getche()
             try:
                 self.startRow = int(input)
-                #PRINT NOTIFICATIONS
                 break
             except ValueError:
-                #PRINT NOTIFICATIONS
-                print "Something"
+                self.notifications.msg_improper_input()
         
+        #Ask for origin column
         while True:
+            self.notifications.msg_enter_origin_column()
             input = getche()
             try:
                 self.startCol = int(input)
-                #PRINT NOTIFICATIONS
                 break
             except ValueError:
-                #PRINT NOTIFICATIONS
-                print "Something"
+                self.notifications.msg_improper_input()
         
+        #Ask for destination row
         while True:
+            self.notifications.msg_enter_destination_row()
             input = getche()
             try:
                 self.endRow = int(input)
-                #PRINT NOTIFICATIONS
                 break
             except ValueError:
-                #PRINT NOTIFICATIONS
-                print "Something"
+                self.notifications.msg_improper_input()
 
+        #Ask for destination column
         while True:
+            self.notifications.msg_enter_destination_column()
             input = getche()
             try:
                 self.endCol = int(input)
-                #PRINT NOTIFICATIONS
                 break
             except ValueError:
-                #PRINT NOTIFICATIONS
-                print "Something"
+                self.notifications.msg_improper_input()
 
         #In case of a 90 degree turn, ask the path preference as well
         if ((self.startRow != self.endRow) and (self.startCol != self.endCol)):
-            #PRINT NOTIFICATIONS
             while True:
+                self.notifications.msg_90degree_path_selection()
                 input = getche()
                 try:
                     if (int(input) == 1 or int(input) == 2):
-                        #PRINT NOTIFICATIONS
+                        self.path = input
                         break
                 except ValueError:
-                    #PRINT NOTIFICATIONS
-                    print "Something"
+                    self.notifications.msg_improper_input()
+
 
     def toss_to_begin(self):
 
@@ -221,49 +220,13 @@ class Game:
         #Whoever has the highest number on top - wins the toss
         if (self.humanDieToss > self.computerDieToss):
             self.humanTurn = True
-            #PRINT NOTIFICATIONS
+            self.notifications.msg_toss_results("You", self.humanDieToss, self.computerDieToss)
         else:
             self.computerTurn = True
-            #PRINT NOTIFICATIONS
+            self.notifications.msg_toss_results("Computer", self.humanDieToss, self.computerDieToss)
 
 
 #Main at the moment
-"""boa = Board()
-bv = BoardView()
-player = Human()
-comp = Computer()
-bv.draw_board(boa)
-
-comp.play(boa, False)
-bv.draw_board(boa)
-player.play(1, 1, 2, 5, boa)
-bv.draw_board(boa)
-comp.play(boa, False)
-bv.draw_board(boa)
-player.play(2, 5, 5, 5, boa)
-bv.draw_board(boa)
-comp.play(boa, False)
-bv.draw_board(boa)
-comp.play(boa, False)
-bv.draw_board(boa)
-comp.play(boa, False)
-bv.draw_board(boa)
-comp.play(boa, False)
-bv.draw_board(boa)
-comp.play(boa, False)
-bv.draw_board(boa)
-comp.play(boa, False)
-bv.draw_board(boa)
-comp.play(boa, False)
-bv.draw_board(boa)
-comp.play(boa, False)
-bv.draw_board(boa)
-comp.play(boa, False)
-bv.draw_board(boa)
-comp.play(boa, False)
-bv.draw_board(boa)"""
-
 game = Game()
 game.implement_game(False, )
-
 
